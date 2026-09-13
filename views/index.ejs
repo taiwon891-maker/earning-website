@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><title>Dashboard</title></head>
+<body style="font-family: Arial; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>Welcome, <%= user.username %>!</h1>
+    <div>
+      <% if(user.role === 'admin') { %><a href="/admin" style="background: purple; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px;">Admin Panel</a><% } %>
+      <a href="/logout" style="background: red; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px;">Logout</a>
+    </div>
+  </div>
+
+  <div style="background: #28a745; color: white; padding: 15px; border-radius: 5px; width: 250px;">
+    <h3 style="margin:0;">Wallet Balance</h3>
+    <h2><%= user.balance %> Points</h2>
+  </div>
+  <br>
+  <a href="/earnings" style="background: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">Go to Earnings Page</a>
+  <hr>
+
+  <h2>Withdraw Funds</h2>
+  <form action="/withdraw" method="POST" style="max-width: 300px;">
+    <label>Method:</label><br>
+    <select name="method" style="width:100%; padding:5px;">
+      <option value="bKash">bKash</option>
+      <option value="Nagad">Nagad</option>
+      <option value="Rocket">Rocket</option>
+      <option value="Upay">Upay</option>
+    </select><br><br>
+    <input type="text" name="accountNumber" placeholder="Account Number" required style="width:100%; padding:5px;"><br><br>
+    <input type="number" name="amount" placeholder="Amount (Points)" required style="width:100%; padding:5px;"><br><br>
+    <button type="submit" style="padding:8px 15px;">Submit Withdrawal Request</button>
+  </form>
+
+  <h3>Withdrawal History</h3>
+  <ul>
+    <% withdrawals.forEach(w => { %>
+      <li><%= w.method %> (<%= w.accountNumber %>) - <%= w.amount %> Points | <b><%= w.status %></b></li>
+    <% }) %>
+  </ul>
+</body>
+</html>
