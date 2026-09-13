@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Dashboard</title></head>
+<body style="font-family: Arial; padding: 20px;">
+  <h2>Admin Panel</h2>
+  <a href="/">Dashboard</a> | <a href="/earnings">Earnings Page</a>
+  <hr>
+
+  <h3>Add Dynamic Task</h3>
+  <form action="/admin/add-task" method="POST" style="background: #f4f4f4; padding: 15px; max-width: 400px;">
+    <input type="text" name="title" placeholder="Task Title" required style="width:100%;"><br><br>
+
+    <select name="type" id="taskType" onchange="toggleFields()" style="width:100%;">
+      <option value="math">Math Quiz</option>
+      <option value="qa">General Knowledge</option>
+      <option value="video">Video Task</option>
+    </select><br><br>
+
+    <div id="qaFields">
+      <input type="text" name="question" placeholder="Question" style="width:100%;"><br><br>
+      <input type="text" name="correctAnswer" placeholder="Correct Answer" style="width:100%;"><br><br>
+    </div>
+
+    <div id="videoFields" style="display:none;">
+      <input type="text" name="videoUrl" placeholder="Video Embed URL" style="width:100%;"><br><br>
+    </div>
+
+    <input type="number" name="rewardPoints" placeholder="Reward Points" required style="width:100%;"><br><br>
+    <button type="submit" style="background: green; color: white;">Create Task</button>
+  </form>
+
+  <script>
+    function toggleFields() {
+      const type = document.getElementById('taskType').value;
+      if (type === 'video') {
+        document.getElementById('qaFields').style.display = 'none';
+        document.getElementById('videoFields').style.display = 'block';
+      } else {
+        document.getElementById('qaFields').style.display = 'block';
+        document.getElementById('videoFields').style.display = 'none';
+      }
+    }
+  </script>
+
+  <hr>
+  <h3>Task Management</h3>
+  <table border="1" cellpadding="8">
+    <tr><th>Title</th><th>Type</th><th>Reward</th><th>Action</th></tr>
+    <% tasks.forEach(t => { %>
+      <tr>
+        <td><%= t.title %></td>
+        <td><%= t.type.toUpperCase() %></td>
+        <td><%= t.rewardPoints %> Pts</td>
+        <td>
+          <form action="/admin/delete-task/<%= t._id %>" method="POST">
+            <button type="submit" style="color:red;">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+
+  <hr>
+  <h3>Withdrawal Requests</h3>
+  <table border="1" cellpadding="8">
+    <tr><th>User</th><th>Method</th><th>Account</th><th>Amount</th><th>Status</th><th>Action</th></tr>
+    <% requests.forEach(r => { %>
+      <tr>
+        <td><%= r.username %></td>
+        <td><%= r.method %></td>
+        <td><%= r.accountNumber %></td>
+        <td><%= r.amount %> Pts</td>
+        <td><%= r.status %></td>
+        <td>
+          <% if(r.status === 'Pending') { %>
+            <form action="/admin/approve/<%= r._id %>" method="POST">
+              <button type="submit">Approve</button>
+            </form>
+          <% } else { %>
+            Approved
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>
