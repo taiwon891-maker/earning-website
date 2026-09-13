@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head><title>Earnings Zone</title></head>
+<body style="font-family: Arial; padding: 20px;">
+  <h2>Earnings Zone</h2>
+  <h3>Current Wallet: <span id="balance"><%= user.balance %></span> Points</h3>
+  <a href="/">Back to Dashboard</a>
+  <hr>
+
+  <div style="max-width: 600px;">
+    <% if(tasks.length === 0) { %><p>No tasks available right now.</p><% } %>
+
+    <% tasks.forEach(task => { %>
+      <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+        <h4><%= task.title %> <span style="color: green;">(+<%= task.rewardPoints %> Pts)</span></h4>
+        
+        <% if (task.type === 'math' || task.type === 'qa') { %>
+          <p><b>Q:</b> <%= task.question %></p>
+          <input type="text" id="ans-<%= task._id %>" placeholder="Answer">
+          <button onclick="submitTask('<%= task._id %>')">Submit</button>
+        <% } else if (task.type === 'video') { %>
+          <% if(task.videoUrl) { %>
+            <iframe width="300" height="180" src="<%= task.videoUrl %>" frameborder="0" allowfullscreen></iframe><br><br>
+          <% } %>
+          <button onclick="submitTask('<%= task._id %>')">Claim Points</button>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+
+  <script>
+    async function submitTask(taskId) {
+      const inputEl = document.getElementById(`ans-${taskId}`);
+      const userAnswer = inputEl ? inputEl.value : '';
+
+      const res = await fetch('/earn/complete-task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId, userAnswer })
+      });
+
+      const data = await res.json();
+      alert(data.message);
+
+      if (data.success) {
+        document.getElementById('balance').innerText = data.newBalance;
+        if(inputEl) inputEl.value = '';
+      }
+    }
+  </script>
+</body>
+</html>
